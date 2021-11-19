@@ -13,6 +13,11 @@ app = Flask(__name__)
 # Home Page (Shows a list of donations & charities)
 @app.route('/')
 def index():
+  if request.method == 'POST':
+    if request.form['submit'] == 'Add Charity':
+      return render_template('new_charity.html')
+    elif request.form['submit'] == 'Add Donation':
+      return render_template('new_donation.html')
   all_donations = donations.find()
   all_charities = charities.find()
   return render_template('home_page.html', donations=all_donations, charities=all_charities)
@@ -23,46 +28,46 @@ def donations_show_all():
   all_donations = donations.find()
   return render_template('donations_page.html', donations=all_donations)
 
-# Donations Page (This will show specifically donations in a listed format with key information)
-@app.route('/donations/<donation_id>', methods=['GET'])
-def donations_single(donation_id):
-  new_donation = donations.find_one({'_id': ObjectId(donation_id)})
-  return render_template('donations_single_page.html', new_donation=new_donation)
+# # Donations Page (This will show specifically donations in a listed format with key information)
+# @app.route('/donations/<donation_id>', methods=['GET'])
+# def donations_single(donation_id):
+#   new_donation = donations.find_one({'_id': ObjectId(donation_id)})
+#   return render_template('donations_single_page.html', new_donation=new_donation)
 
-# Donations Page (Create and submit a donation form)
-@app.route('/donations', methods=['POST'])
-def donations_create():
-  new_donation = {
-    'charity': request.form.get('title'),
-    'amount': request.form.get('amount'),
-    'notes': request.form.get('notes'),
-    'user_id': request.form.get('user_id'),
-    'created_at': datetime.now()
-  }
-  donation_new = donations.insert_one(new_donation)
-  all_donations = donations.find()
-  return redirect(url_for('donations_page.html', all_donations=all_donations))
+# # Donations Page (Create and submit a donation form)
+# @app.route('/donations', methods=['POST'])
+# def donations_create():
+#   new_donation = {
+#     'charity': request.form.get('title'),
+#     'amount': request.form.get('amount'),
+#     'notes': request.form.get('notes'),
+#     'user_id': request.form.get('user_id'),
+#     'created_at': datetime.now()
+#   }
+#   donation_new = donations.insert_one(new_donation)
+#   all_donations = donations.find()
+#   return redirect(url_for('donations_page.html', all_donations=all_donations))
 
-# Donations Page (Edit donation)
-@app.route('/donations/<donation_id>', methods=['POST'])
-def donations_single(donation_id):
-  updated_donation = {
-    'charity': request.form.get('title'),
-    'amount': request.form.get('amount'),
-    'notes': request.form.get('notes'),
-    'user_id': request.form.get('user_id'),
-    'created_at': datetime.now()
-  }
-  donations.update_one({'_id': ObjectId(donation_id)}, {'$set': updated_donation})
-  all_donations = donations.find()
-  return render_template('donations_single_page.html', all_donations=all_donations)
+# # Donations Page (Edit donation)
+# @app.route('/donations/<donation_id>', methods=['POST'])
+# def donations_single(donation_id):
+#   updated_donation = {
+#     'charity': request.form.get('title'),
+#     'amount': request.form.get('amount'),
+#     'notes': request.form.get('notes'),
+#     'user_id': request.form.get('user_id'),
+#     'created_at': datetime.now()
+#   }
+#   donations.update_one({'_id': ObjectId(donation_id)}, {'$set': updated_donation})
+#   all_donations = donations.find()
+#   return render_template('donations_single_page.html', all_donations=all_donations)
 
-# Donation Deletion
-@app.route('/donations/<donation_id>', methods=['DELETE'])
-def donation_delete(donation_id):
-  donations.delete_one({'_id': ObjectId(donation_id)})
-  all_donations = donations.find()
-  return render_template('donations_single_page.html', all_donations=all_donations)
+# # Donation Deletion
+# @app.route('/donations/<donation_id>', methods=['DELETE'])
+# def donation_delete(donation_id):
+#   donations.delete_one({'_id': ObjectId(donation_id)})
+#   all_donations = donations.find()
+#   return render_template('donations_single_page.html', all_donations=all_donations)
 
 # # Get All Charities
 # @app.route('/charities', methods=['GET'])

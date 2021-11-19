@@ -1,0 +1,31 @@
+{% extends 'base.html' %} 
+{% block content %}
+
+<h2>Charities:</h2>
+{% for charity in all_charities%}
+<div>
+  <p>{{ charity.name }}</p>
+  <p>{{ charity.donation_count }}</p>
+  <p>{{ charity.donation_total }}</p>
+  <p>{{ charity.created_at }}</p>
+</div>
+{% endfor %}
+<div>
+  <input type="submit" name="submit" value="Add Charity"/>
+</div>
+
+<h2>Donations:</h2>
+{% for donation in all_donations%}
+<div>
+  <p>{{ charity.charity }}</p>
+  <p>{{ charity.amount }}</p>
+  <p>{{ charity.notes }}</p>
+  <p>{{ charity.username }}</p>
+  <p>{{ charity.created_at }}</p>
+</div>
+{% endfor %}
+<div>
+  <input type="submit" name="submit" value="Add Donation"/>
+</div>
+
+{% endblock %}
