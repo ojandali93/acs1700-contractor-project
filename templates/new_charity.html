@@ -1,0 +1,14 @@
+{% extends 'base.html' %} 
+{% block content %}
+<h2>Add A New Charity:</h2>
+
+<form method="POST" actions="/charities">
+  <label>Name</label>
+  <input type="text" name="name"/>
+  <label>Category</label>
+  <input type="text" name="category"/>
+  <input type="submit" name="submit" value="submit"/>
+</form>
+
+
+{% endblock %}

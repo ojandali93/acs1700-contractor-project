@@ -22,70 +22,117 @@ def index():
   all_charities = charities.find()
   return render_template('home_page.html', donations=all_donations, charities=all_charities)
 
-# Donations Page (This will show specifically donations in a listed format with key information)
+# Grabs all of the donations
 @app.route('/donations', methods=['GET'])
-def donations_show_all():
+def all_donations():
   all_donations = donations.find()
-  return render_template('donations_page.html', donations=all_donations)
+  return render_template('all_donations.html', all_donations=all_donations)
 
-# # Donations Page (This will show specifically donations in a listed format with key information)
-# @app.route('/donations/<donation_id>', methods=['GET'])
-# def donations_single(donation_id):
-#   new_donation = donations.find_one({'_id': ObjectId(donation_id)})
-#   return render_template('donations_single_page.html', new_donation=new_donation)
+# Grabs all of the charities
+@app.route('/charities', methods=['GET'])
+def all_charities():
+  all_charities = charities.find()
+  return render_template('all_charities.html', all_charities=all_charities)
 
-# # Donations Page (Create and submit a donation form)
-# @app.route('/donations', methods=['POST'])
-# def donations_create():
-#   new_donation = {
-#     'charity': request.form.get('title'),
-#     'amount': request.form.get('amount'),
-#     'notes': request.form.get('notes'),
-#     'user_id': request.form.get('user_id'),
-#     'created_at': datetime.now()
-#   }
-#   donation_new = donations.insert_one(new_donation)
-#   all_donations = donations.find()
-#   return redirect(url_for('donations_page.html', all_donations=all_donations))
+# Grabs single donation
+@app.route('/donations/<donation_id>', methods=['GET'])
+def single_donation(donation_id):
+  single_donation = donations.find_one({'_id': ObjectId(donation_id)})
+  return render_template('donation_single.html', single_donation=single_donation)
 
-# # Donations Page (Edit donation)
-# @app.route('/donations/<donation_id>', methods=['POST'])
-# def donations_single(donation_id):
-#   updated_donation = {
-#     'charity': request.form.get('title'),
-#     'amount': request.form.get('amount'),
-#     'notes': request.form.get('notes'),
-#     'user_id': request.form.get('user_id'),
-#     'created_at': datetime.now()
-#   }
-#   donations.update_one({'_id': ObjectId(donation_id)}, {'$set': updated_donation})
-#   all_donations = donations.find()
-#   return render_template('donations_single_page.html', all_donations=all_donations)
+# Grabs single charity
+@app.route('/charities/<charities_id>', methods=['GET'])
+def single_charity(charities_id):
+  single_charity = charities.find_one({'_id': ObjectId(charities_id)})
+  return render_template('charity_single.html', single_charity=single_charity)
 
-# # Donation Deletion
-# @app.route('/donations/<donation_id>', methods=['DELETE'])
-# def donation_delete(donation_id):
-#   donations.delete_one({'_id': ObjectId(donation_id)})
-#   all_donations = donations.find()
-#   return render_template('donations_single_page.html', all_donations=all_donations)
+# Create single donation
+@app.route('/donations/', methods=['POST'])
+def create_donation():
+  if request.form.get('charity_name') == '':
+    return render_template('new_charity.html')
+  else:
+    new_donation = {
+      'charity_name': request.form.get('charity_name'),
+      'amount': request.form.get('amount'),
+      'notes': request.form.get('notes'),
+      'user_name': request.form.get('user_name')
+    }
+    single_charity = charities.find_one({'name': ObjectId(request.form.get('charity_name'))}) 
+    single_charity['total_donations'] = single_charity['total_donations'] + 1
+    single_charity['total_donated'] = single_charity['total_donated'] + request.form.get('amount')
+    single_charity['all_donations'].append(new_donation)
+    all_donations = donations.find()
+    return render_template('all_donations.html', all_donations=all_donations)
 
-# # Get All Charities
-# @app.route('/charities', methods=['GET'])
-# def charity_show_all():
-#   all_charities = charities.find()
-#   return render_template('charities_page.html', all_charities=all_charities)
+# Create single charity
+@app.route('/charities/', methods=['POST'])
+def create_charity():
+  new_charity = {
+    'name': request.form.get('charity_name'),
+    'category': request.form.get('amount'),
+    'total_dontations': 0,
+    'total_donated': 0,
+    'all_donations': [],
+    'created_at': datetime.now()
+  }
+  all_charities = charities.find()
+  return render_template('all_charities.html', all_charities=all_charities)
 
-# # Get Single Charities
-# @app.route('/charities/<charity_id>', methods=['GET'])
-# def charity_single(charity_id):
-#   single_charity = charities.find_one({'_id': ObjectId(charity_id)})
-#   return render_template('charities_single_page.html', single_charity=single_charity)
+#update a donatoin
+@app.route('/donations/<donation_id>', methods=['POST'])
+def update_donation(donation_id):
+  donation_to_update = donations.find_one({'_id': ObjectId(donation_id)})
+  updated_donation = {
+    'charity_name': request.form.get('charity_name'),
+    'amount': request.form.get('amount'),
+    'notes': request.form.get('notes'),
+    'user_name': request.form.get('user_name')
+  }
+  #update the charity info to reflect the change in donation
+  single_donation = donations.find_one({'_id': ObjectId(donation_id)})
+  donations.update_one({'_id': ObjectId(donation_id)}, {'$set': updated_donation})
+  return render_template('donation_single.html', single_donation=single_donation)
 
-# # Update Charities
-# @app.route('/charities/<charity_id>', methods=['POST'])
-# def charity_sinsgle(charity_id):
-#   single_charity = charities.find_one({'_id': ObjectId(charity_id)})
-#   return render_template('charities_single_page.html', single_charity=single_charity)
+#update a charity
+@app.route('/donations/<charity_id>', methods=['POST'])
+def update_donation(charity_id):
+  charity_to_update = charities.find_one({'_id': ObjectId(charity_id)})
+  updated_charity = {
+    'name': request.form.get('charity_name'),
+    'category': request.form.get('amount'),
+    'total_dontations': charity_to_update['total_donatoins'],
+    'total_donated': charity_to_update['total_donated'],
+    'all_donations': charity_to_update['all_donations'],
+    'created_at': charity_to_update['created_at'],
+  }
+  single_charity = charities.find_one({'_id': ObjectId(charity_id)})
+  charities.update_one({'_id': ObjectId(charity_id)}, {'$set': updated_charity})
+  return render_template('charity_single.html', single_charity=single_charity)
 
+# Donation Deletion
+@app.route('/donations/<donation_id>', methods=['DELETE'])
+def donation_delete(donation_id):
+  donation_to_delete = donations.find_one({'_id': ObjectId(donation_id)})
+  charity_to_update = charities.find_one({'name': donation_to_delete['charity_name']})
+  charity_to_update['total_donations'] = charity_to_update['total_donations'] - 1
+  charity_to_update['total_donated'] = charity_to_update['total_donated'] - donation_to_delete['amount']
+  charity_to_update['all_donations'].remove(donation_to_delete)
+  donations.delete_one({'_id': ObjectId(donation_id)})
+  all_donations = donations.find()
+  return render_template('all_donations.html', all_donations=all_donations)
+
+# Charity Deletion
+@app.route('/charities/<charity_id>', methods=['DELETE'])
+def donation_delete(charity_id):
+  charity_to_delete = charities.find_one({'_id': ObjectId(charity_id)})
+  list_of_donations = charity_to_delete['all_donations']
+  for donation in list_of_donations:
+    current_donation = donation.find_one({'_id': ObjectId(donation['_id'])})
+    donations.delete_one({'_id': ObjectId(current_donation['_id'])})
+  charities.delete_one({'_id': ObjectId(charity_id)})
+  all_charities = charities.find()
+  return render_template('all_charities.html', all_charities=all_charities)
+  
 if __name__ == '__main__':
     app.run(debug=True)
