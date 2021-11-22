@@ -12,12 +12,7 @@ app = Flask(__name__)
 
 # Home Page (Shows a list of donations & charities)
 @app.route('/')
-def index():
-  if request.method == 'POST':
-    if request.form['submit'] == 'Add Charity':
-      return render_template('new_charity.html')
-    elif request.form['submit'] == 'Add Donation':
-      return render_template('new_donation.html')
+def home_page():
   all_donations = donations.find()
   all_charities = charities.find()
   return render_template('home_page.html', donations=all_donations, charities=all_charities)
@@ -34,20 +29,8 @@ def all_charities():
   all_charities = charities.find()
   return render_template('all_charities.html', all_charities=all_charities)
 
-# Grabs single donation
-@app.route('/donations/<donation_id>', methods=['GET'])
-def single_donation(donation_id):
-  single_donation = donations.find_one({'_id': ObjectId(donation_id)})
-  return render_template('donation_single.html', single_donation=single_donation)
-
-# Grabs single charity
-@app.route('/charities/<charities_id>', methods=['GET'])
-def single_charity(charities_id):
-  single_charity = charities.find_one({'_id': ObjectId(charities_id)})
-  return render_template('charity_single.html', single_charity=single_charity)
-
 # Create single donation
-@app.route('/donations/', methods=['POST'])
+@app.route('/donations', methods=['POST'])
 def create_donation():
   if request.form.get('charity_name') == '':
     return render_template('new_charity.html')
@@ -62,12 +45,14 @@ def create_donation():
     single_charity['total_donations'] = single_charity['total_donations'] + 1
     single_charity['total_donated'] = single_charity['total_donated'] + request.form.get('amount')
     single_charity['all_donations'].append(new_donation)
-    all_donations = donations.find()
-    return render_template('all_donations.html', all_donations=all_donations)
+  all_donations = donations.find()
+  all_charities = charities.find()
+  return render_template('home_page.html', donations=all_donations, charities=all_charities)
 
 # Create single charity
-@app.route('/charities/', methods=['POST'])
+@app.route('/charities', methods=['POST'])
 def create_charity():
+  print('hello')
   new_charity = {
     'name': request.form.get('charity_name'),
     'category': request.form.get('amount'),
@@ -76,8 +61,11 @@ def create_charity():
     'all_donations': [],
     'created_at': datetime.now()
   }
+  charities.insert_one(new_charity)
+  all_donations = donations.find()
   all_charities = charities.find()
-  return render_template('all_charities.html', all_charities=all_charities)
+  return render_template('home_page.html', donations=all_donations, charities=all_charities)
+
 
 #update a donatoin
 @app.route('/donations/<donation_id>', methods=['POST'])
@@ -96,7 +84,7 @@ def update_donation(donation_id):
 
 #update a charity
 @app.route('/donations/<charity_id>', methods=['POST'])
-def update_donation(charity_id):
+def update_charity(charity_id):
   charity_to_update = charities.find_one({'_id': ObjectId(charity_id)})
   updated_charity = {
     'name': request.form.get('charity_name'),
@@ -124,7 +112,7 @@ def donation_delete(donation_id):
 
 # Charity Deletion
 @app.route('/charities/<charity_id>', methods=['DELETE'])
-def donation_delete(charity_id):
+def charity_delete(charity_id):
   charity_to_delete = charities.find_one({'_id': ObjectId(charity_id)})
   list_of_donations = charity_to_delete['all_donations']
   for donation in list_of_donations:
@@ -133,6 +121,18 @@ def donation_delete(charity_id):
   charities.delete_one({'_id': ObjectId(charity_id)})
   all_charities = charities.find()
   return render_template('all_charities.html', all_charities=all_charities)
+
+# Grabs single donation
+@app.route('/donations/<donation_id>', methods=['GET'])
+def single_donation(donation_id):
+  single_donation = donations.find_one({'_id': ObjectId(donation_id)})
+  return render_template('donation_single.html', single_donation=single_donation)
+
+# Grabs single charity
+@app.route('/charities/<charities_id>', methods=['GET'])
+def single_charity(charities_id):
+  single_charity = charities.find_one({'_id': ObjectId(charities_id)})
+  return render_template('charity_single.html', single_charity=single_charity)
   
 if __name__ == '__main__':
     app.run(debug=True)

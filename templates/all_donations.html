@@ -1,0 +1,15 @@
+{% extends 'base.html' %} 
+{% block content %}
+
+<h2>Donations:</h2>
+{% for donation in all_donations%}
+<div>
+  <p>{{ charity.charity }}</p>
+  <p>{{ charity.amount }}</p>
+  <p>{{ charity.notes }}</p>
+  <p>{{ charity.username }}</p>
+  <p>{{ charity.created_at }}</p>
+</div>
+{% endfor %}
+
+{% endblock %}

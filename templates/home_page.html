@@ -11,7 +11,13 @@
 </div>
 {% endfor %}
 <div>
-  <input type="submit" name="submit" value="Add Charity"/>
+  <form method="post" actions="{{ url_for('create_charity') }}">
+    <label>Name</label>
+    <input type="text" name="name"/>
+    <label>Category</label>
+    <input type="text" name="category"/>
+    <input type="submit" name="submit" value="submit"/>
+  </form>
 </div>
 
 <h2>Donations:</h2>
@@ -25,7 +31,15 @@
 </div>
 {% endfor %}
 <div>
-  <input type="submit" name="submit" value="Add Donation"/>
+  <form method="POST" actions="{{ url_for('create_donation') }}">
+    <label>Amount</label>
+    <input type="text" name="amount"/>
+    <label>Notes</label>
+    <input type="text" name="notes"/>
+    <label>Charity</label>
+    <input type="text" name="notes"/>
+    <input type="submit" name="submit" value="submit"/>
+  </form>
 </div>
 
 {% endblock %}
