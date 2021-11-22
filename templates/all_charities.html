@@ -5,10 +5,23 @@
 {% for charity in all_charities%}
 <div>
   <p>{{ charity.name }}</p>
-  <p>{{ charity.donation_count }}</p>
-  <p>{{ charity.donation_total }}</p>
+  <p>{{ charity.category }}</p>
+  <p>{{ charity.total_dontations }}</p>
+  <p>{{ charity.total_donated }}</p>
   <p>{{ charity.created_at }}</p>
+  <a href="/charities/delete/{{charity._id}}" >DELETE</a>
 </div>
 {% endfor %}
+
+<div>
+  <form method="post" actions="{{ url_for('create_charity') }}">
+    <label>Name</label>
+    <input type="text" name="name"/>
+    <label>Category</label>
+    <input type="text" name="category"/>
+    <input type="submit" name="submit" value="submit"/>
+  </form>
+</div>
+
 
 {% endblock %}

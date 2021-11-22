@@ -15,7 +15,7 @@ app = Flask(__name__)
 def home_page():
   all_donations = donations.find()
   all_charities = charities.find()
-  return render_template('home_page.html', donations=all_donations, charities=all_charities)
+  return render_template('home_page.html', all_donations=all_donations, all_charities=all_charities)
 
 # Grabs all of the donations
 @app.route('/donations', methods=['GET'])
@@ -52,10 +52,11 @@ def create_donation():
 # Create single charity
 @app.route('/charities', methods=['POST'])
 def create_charity():
-  print('hello')
+  print(request.form.get('name'))
+  print(request.form.get('category'))
   new_charity = {
-    'name': request.form.get('charity_name'),
-    'category': request.form.get('amount'),
+    'name': request.form.get('name'),
+    'category': request.form.get('category'),
     'total_dontations': 0,
     'total_donated': 0,
     'all_donations': [],
@@ -111,8 +112,9 @@ def donation_delete(donation_id):
   return render_template('all_donations.html', all_donations=all_donations)
 
 # Charity Deletion
-@app.route('/charities/<charity_id>', methods=['DELETE'])
+@app.route('/charities/delete/<charity_id>', methods=['GET'])
 def charity_delete(charity_id):
+  print(charity_id)
   charity_to_delete = charities.find_one({'_id': ObjectId(charity_id)})
   list_of_donations = charity_to_delete['all_donations']
   for donation in list_of_donations:
@@ -123,7 +125,7 @@ def charity_delete(charity_id):
   return render_template('all_charities.html', all_charities=all_charities)
 
 # Grabs single donation
-@app.route('/donations/<donation_id>', methods=['GET'])
+@app.route('/donations/delete/<donation_id>', methods=['GET'])
 def single_donation(donation_id):
   single_donation = donations.find_one({'_id': ObjectId(donation_id)})
   return render_template('donation_single.html', single_donation=single_donation)

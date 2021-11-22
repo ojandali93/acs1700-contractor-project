@@ -5,41 +5,22 @@
 {% for charity in all_charities%}
 <div>
   <p>{{ charity.name }}</p>
-  <p>{{ charity.donation_count }}</p>
-  <p>{{ charity.donation_total }}</p>
+  <p>{{ charity.category }}</p>
+  <p>{{ charity.total_dontations }}</p>
+  <p>{{ charity.total_donated }}</p>
   <p>{{ charity.created_at }}</p>
 </div>
 {% endfor %}
-<div>
-  <form method="post" actions="{{ url_for('create_charity') }}">
-    <label>Name</label>
-    <input type="text" name="name"/>
-    <label>Category</label>
-    <input type="text" name="category"/>
-    <input type="submit" name="submit" value="submit"/>
-  </form>
-</div>
 
 <h2>Donations:</h2>
 {% for donation in all_donations%}
 <div>
-  <p>{{ charity.charity }}</p>
-  <p>{{ charity.amount }}</p>
-  <p>{{ charity.notes }}</p>
-  <p>{{ charity.username }}</p>
-  <p>{{ charity.created_at }}</p>
+  <p>{{ donation.charity }}</p>
+  <p>{{ donation.amount }}</p>
+  <p>{{ donation.notes }}</p>
+  <p>{{ donation.username }}</p>
+  <p>{{ donation.created_at }}</p>
 </div>
 {% endfor %}
-<div>
-  <form method="POST" actions="{{ url_for('create_donation') }}">
-    <label>Amount</label>
-    <input type="text" name="amount"/>
-    <label>Notes</label>
-    <input type="text" name="notes"/>
-    <label>Charity</label>
-    <input type="text" name="notes"/>
-    <input type="submit" name="submit" value="submit"/>
-  </form>
-</div>
 
 {% endblock %}

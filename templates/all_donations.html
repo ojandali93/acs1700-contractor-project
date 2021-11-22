@@ -4,12 +4,24 @@
 <h2>Donations:</h2>
 {% for donation in all_donations%}
 <div>
-  <p>{{ charity.charity }}</p>
-  <p>{{ charity.amount }}</p>
-  <p>{{ charity.notes }}</p>
-  <p>{{ charity.username }}</p>
-  <p>{{ charity.created_at }}</p>
+  <p>{{ donation.charity }}</p>
+  <p>{{ donation.amount }}</p>
+  <p>{{ donation.notes }}</p>
+  <p>{{ donation.username }}</p>
+  <p>{{ donation.created_at }}</p>
 </div>
 {% endfor %}
+
+<div>
+  <form method="POST" actions="/donations">
+    <label>Amount</label>
+    <input type="text" name="amount"/>
+    <label>Notes</label>
+    <input type="text" name="notes"/>
+    <label>Charity</label>
+    <input type="text" name="notes"/>
+    <input type="submit" name="submit" value="submit"/>
+  </form>
+</div>
 
 {% endblock %}
