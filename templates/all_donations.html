@@ -9,17 +9,25 @@
   <p>{{ donation.notes }}</p>
   <p>{{ donation.username }}</p>
   <p>{{ donation.created_at }}</p>
+  <a href="/charities/delete/{{charity._id}}" >DELETE</a>
+  <a href="/donations/delete/{{donation._id}}" >DELETE</a>
 </div>
 {% endfor %}
 
 <div>
   <form method="POST" actions="/donations">
+    <label>Name</label>
+    <input type="text" name="name"/>
     <label>Amount</label>
-    <input type="text" name="amount"/>
+    <input type="number" name="amount"/>
     <label>Notes</label>
     <input type="text" name="notes"/>
     <label>Charity</label>
-    <input type="text" name="notes"/>
+    <select name="charity" id="charity_name">
+      {% for charity in all_charities %}
+        <option value={{charity._id}}>{{charity.name}}</option>
+      {% endfor %}
+    </select>
     <input type="submit" name="submit" value="submit"/>
   </form>
 </div>
